@@ -4,9 +4,11 @@
    input: [[a1,a2],[b1,b2],[c1,c2]]  
    output: [[a1,b1,c1],[a1,b1,c2],[a1,b2,c1],[a1,b2,c2],[a2,b1,c1],[a2,b1,c2],[a2,b2,c1],[a2,b2,c2]]
 
+   The given input can be of any size and the size of each list in the input can be arbitrary. It is possilbe to limit the result and return only every k-th element from the output.
+
 # License
 
-   Copyright 2021 Lukasz Kowalczyk
+   Copyright 2021, 2022 Lukasz Kowalczyk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

@@ -1,5 +1,5 @@
-/**
- *    Copyright 2021 Lukasz Kowalczyk
+/*
+ *    Copyright 2021, 2022 Lukasz Kowalczyk
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,15 +20,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class CombinerTest {
 
     Combiner<String> combiner;
     List<List<String>> data;
+
     public static final long EXPECTED_OUTPUT_SIZE = 18;
+    public static final long EXPECTED_OUTPUT_SUBSET_EVERY_SECOND_SIZE = 9;
+    public static final long EXPECTED_OUTPUT_SUBSET_EVERY_THIRD_SIZE = 6;
 
     @BeforeEach
     public void prepareData(){
@@ -36,10 +37,7 @@ public class CombinerTest {
         this.data.add(Arrays.asList("a1","a2","a3"));
         this.data.add(Arrays.asList("b1","b2"));
         this.data.add(Arrays.asList("c1","c2","c3"));
-    }
 
-    @BeforeEach
-    public void prepareCombiner(){
         combiner = new Combiner<>();
     }
 
@@ -96,5 +94,58 @@ public class CombinerTest {
         for(List<String> ls : expectedOutput){
             Assertions.assertFalse(output.contains(ls));
         }
+    }
+
+    @Test
+    public void combinerTestResultSubsetSize(){
+        List<List<String>> output = this.combiner.combine(this.data, 2);
+        Assertions.assertEquals(EXPECTED_OUTPUT_SUBSET_EVERY_SECOND_SIZE, output.size(), "output subset size is different than expected!");
+    }
+
+    @Test
+    public void combinerTestResultSubset(){
+        List<List<String>> output = this.combiner.combine(data, 2);
+
+        List<List<String>> expectedOutput = new ArrayList<>();
+
+        expectedOutput.add(Arrays.asList("a1","b1","c2"));
+        expectedOutput.add(Arrays.asList("a1","b2","c1"));
+        expectedOutput.add(Arrays.asList("a1","b2","c3"));
+        expectedOutput.add(Arrays.asList("a2","b1","c2"));
+        expectedOutput.add(Arrays.asList("a2","b2","c1"));
+        expectedOutput.add(Arrays.asList("a2","b2","c3"));
+        expectedOutput.add(Arrays.asList("a3","b1","c2"));
+        expectedOutput.add(Arrays.asList("a3","b2","c1"));
+        expectedOutput.add(Arrays.asList("a3","b2","c3"));
+
+        for(List<String> ls : expectedOutput){
+            Assertions.assertTrue(output.contains(ls));
+        }
+
+    }
+
+    @Test
+    public void combinerTestResultSubsetEveryThirdSize(){
+        List<List<String>> output = this.combiner.combine(this.data, 3);
+        Assertions.assertEquals(EXPECTED_OUTPUT_SUBSET_EVERY_THIRD_SIZE, output.size(), "output subset size is different than expected!");
+    }
+
+    @Test
+    public void combinerTestResultSubsetEveryThird(){
+        List<List<String>> output = this.combiner.combine(data, 3);
+
+        List<List<String>> expectedOutput = new ArrayList<>();
+
+        expectedOutput.add(Arrays.asList("a1","b1","c3"));
+        expectedOutput.add(Arrays.asList("a1","b2","c3"));
+        expectedOutput.add(Arrays.asList("a2","b1","c3"));
+        expectedOutput.add(Arrays.asList("a2","b2","c3"));
+        expectedOutput.add(Arrays.asList("a3","b1","c3"));
+        expectedOutput.add(Arrays.asList("a3","b2","c3"));
+
+        for(List<String> ls : expectedOutput){
+            Assertions.assertTrue(output.contains(ls));
+        }
+
     }
 }

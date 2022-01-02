@@ -1,5 +1,5 @@
-/**
- *    Copyright 2021 Lukasz Kowalczyk
+/*
+ *    Copyright 2021, 2022 Lukasz Kowalczyk
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -30,4 +30,14 @@ public interface ICombiner<T> {
      * @return
      */
     List<List<T>> combine(List<List<T>> input);
+
+    /**
+     * Transforms the input according to the implementation and returns only a subset<br>
+     * of results, i.e. every k result from the combined output list
+     *
+     * @param input
+     * @param k
+     * @return
+     */
+    List<List<T>> combine(List<List<T>> input, int k);
 }

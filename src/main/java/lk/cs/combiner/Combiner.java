@@ -1,5 +1,5 @@
-/**
- *    Copyright 2021 Lukasz Kowalczyk
+/*
+ *    Copyright 2021, 2022 Lukasz Kowalczyk
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -36,33 +36,43 @@ public class Combiner<T> implements ICombiner<T> {
      */
     @Override
     public List<List<T>> combine(List<List<T>> input) {
-        if(input==null) {
-            throw new IllegalArgumentException("input must be a list of lists of objects and cannot be null!");
-        }
-
-        int inputSize = input.size();
-        int[] lengths = new int[inputSize];
-        int[] counters = new int[inputSize];
-
-        for(int i=0; i<inputSize; i++){
-            lengths[i] = input.get(i).size();
-        }
-
-        return doCombine(input, counters, lengths);
+        return combine(input, 1);
     }
 
-    private List<List<T>> doCombine(List<List<T>> input, int[] counters, int[] lengths){
+    /**
+     *  Combines objects from the given input according to the specific pattern, e.g.:
+     *  input: [[a1,a2],[b1,b2],[c1,c2]]
+     *  output: [[a1,b1,c1],[a1,b1,c2],[a1,b2,c1],[a1,b2,c2],[a2,b1,c1],[a2,b1,c2],[a2,b2,c1],[a2,b2,c2]]
+     *  and returns only every k element from the resulting list
+     *
+     * @param input
+     * @param k
+     * @return
+     */
+    @Override
+    public List<List<T>> combine(List<List<T>> input, int k) {
+        inputNotNullCheck(input);
+
+        int[] lengths = calculateLengths(input);
+        int[] counters = initializeCounters(input);
+
+        return doCombine(input, counters, lengths, k);
+    }
+
+    private List<List<T>> doCombine(List<List<T>> input, int[] counters, int[] lengths, int k){
         long total = connectionsNumber(lengths);
 
         List<List<T>> output = new ArrayList<>();
         List<T> line = new ArrayList<>();
 
         for(int c=1; c<=total; c++){
-            for(int i=0; i<input.size(); i++){
-                line.add(input.get(i).get(counters[i]));
+            if(c % k == 0) {
+                for (int i = 0; i < input.size(); i++) {
+                    line.add(input.get(i).get(counters[i]));
+                }
+                output.add(new ArrayList<>(line));
+                line.clear();
             }
-            output.add(new ArrayList<>(line));
-            line.clear();
 
             for(int j=input.size()-1; j>=0; j--){
                 if(counters[j]<lengths[j]-1){
@@ -74,6 +84,26 @@ public class Combiner<T> implements ICombiner<T> {
             }
         }
         return output;
+    }
+
+    private void inputNotNullCheck(List<List<T>> input){
+        if(input==null) {
+            throw new IllegalArgumentException("input must be a list of lists of objects and cannot be null!");
+        }
+    }
+
+    private int[] calculateLengths(List<List<T>> input){
+        int[] lengths = new int[input.size()];
+
+        for(int i=0; i<input.size(); i++){
+            lengths[i] = input.get(i).size();
+        }
+
+        return lengths;
+    }
+
+    private int[] initializeCounters(List<List<T>> input){
+        return new int[input.size()];
     }
 
     private long connectionsNumber(int[] lengths){
