@@ -24,8 +24,8 @@ import java.util.*;
 
 public class CombinerTest {
 
-    Combiner<String> combiner;
-    List<List<String>> data;
+    private Combiner<String> combiner;
+    private List<List<String>> data;
 
     public static final long EXPECTED_OUTPUT_SIZE = 18;
     public static final long EXPECTED_OUTPUT_SUBSET_EVERY_SECOND_SIZE = 9;
